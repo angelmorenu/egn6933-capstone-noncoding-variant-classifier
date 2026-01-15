@@ -13,7 +13,7 @@
 
 **Team Lead:** Angel Morenu (Individual Project)
 
-**Collaboration:** Dylan Tan contributes as a data and features collaborator, providing precomputed ESM2 embedding features for coding variants to support benchmarking and methodological validation.
+**Collaboration:** Dylan Tan provided guidance and reference code on handling embedding-style feature datasets. Because the dataset shared is limited to coding variants, it will not be used in this project, which focuses on non-coding variants.
 
 ---
 
@@ -39,9 +39,7 @@ Clinical significance labels will be strictly defined to maximize confidence in 
 
 Non-coding variants will be identified using computational consequence annotation via the Ensembl Variant Effect Predictor (VEP; McLaren et al., 2016). This tool predicts the functional consequence of each variant by comparing variant positions to known gene annotations; non-coding consequences include variants within introns, untranslated regions (UTRs), upstream and downstream intergenic regions, and other non-exonic genomic elements. This computational filtering allows scalable and reproducible isolation of non-coding variants from the full ClinVar dataset.
 
-As part of this project, Dylan Tan contributes a collaborator dataset with precomputed ESM2 embedding features (Lin et al., 2023). This collaborator dataset is specifically based on coding variants and serves the purpose of benchmarking and validating the modeling methodology across different sequence domains and feature representations. Although this dataset focuses on coding variants—a different genomic context than the project's primary non-coding focus—the ESM2 embeddings represent learned representations from a protein language model that may provide complementary signal when applied to non-coding sequence regions. The availability of externally precomputed embeddings allows the project to evaluate the robustness of the classification approach when applied to different feature representations and provides a concrete example of how applied data scientists integrate external computational resources into unified analysis pipelines.
-
-For the primary non-coding variant analysis, fixed-length DNA sequence windows will be extracted centered on each variant's genomic position from public reference genome sequences. These sequence windows will then be embedded using a pretrained DNA foundation model in the style of DNABERT (Ji et al., 2021), producing fixed-dimensional feature vectors suitable for machine learning. The project plans to explore multiple window sizes (101 base pairs, 201 base pairs, 501 base pairs) during exploratory data analysis to determine which encoding best captures variant-specific signal. For methodological consistency, the collaborator dataset will be standardized into the same feature engineering pipeline, allowing direct comparison of methods across the two datasets.
+For the primary non-coding variant analysis, fixed-length DNA sequence windows will be extracted centered on each variant's genomic position from public reference genome sequences. These sequence windows will then be embedded using a pretrained DNA foundation model in the style of DNABERT (Ji et al., 2021), producing fixed-dimensional feature vectors suitable for machine learning. The project plans to explore multiple window sizes (101 base pairs, 201 base pairs, 501 base pairs) during exploratory data analysis to determine which encoding best captures variant-specific signal.
 
 Data curation and versioning will follow software engineering best practices. The curated labeled dataset will be stored as versioned Parquet files that explicitly record the ClinVar release date, consequence annotation parameters, window size, and label filtering criteria applied during construction. All dataset processing steps will be deterministic and fully scripted, ensuring that researchers can reconstruct the labeled dataset deterministically from the original ClinVar public release. Embedding features will be cached to disk in standardized formats to enable reproducible model training without requiring re-computation of expensive embedding operations.
 
@@ -51,7 +49,7 @@ ClinVar is public, de-identified, and accessible without special data-use agreem
 
 ## 4. Technical Execution & Complexity
 
-The end-to-end pipeline comprises eight major computational phases. First, ClinVar releases are downloaded and parsed, variant representations are normalized, and clinical significance labels are applied and filtered. Second, genomic consequences are computed using Ensembl VEP and the dataset is subsetted to non-coding variants. Third, fixed-length DNA sequence windows are extracted from the reference genome centered at each variant position. Fourth, pretrained DNA embeddings are generated for each sequence window using a DNABERT-style foundation model. Fifth, the collaborator ESM2 embedding dataset is ingested and aligned to the same feature schema for direct comparison. Sixth, train, validation, and test splits are created using chromosome-based stratification to prevent data leakage (ensuring that sequences from the same genomic region do not appear in both training and test sets). Seventh, multiple classifier models are trained on the embedding features and compared using rigorous statistical tests. Eighth, the best-performing model is calibrated, validated, and deployed as both a web application and command-line tool.
+The end-to-end pipeline comprises seven major computational phases. First, ClinVar releases are downloaded and parsed, variant representations are normalized, and clinical significance labels are applied and filtered. Second, genomic consequences are computed using Ensembl VEP and the dataset is subsetted to non-coding variants. Third, fixed-length DNA sequence windows are extracted from the reference genome centered at each variant position. Fourth, pretrained DNA embeddings are generated for each sequence window using a DNABERT-style foundation model. Fifth, train, validation, and test splits are created using chromosome-based stratification to prevent data leakage (ensuring that sequences from the same genomic region do not appear in both training and test sets). Sixth, multiple classifier models are trained on the embedding features and compared using rigorous statistical tests. Seventh, the best-performing model is calibrated, validated, and deployed as both a web application and command-line tool.
 
 The project will implement three complementary classifier architectures, all trained on the same embedding features. Logistic Regression will serve as an interpretable, well-behaved baseline model. Random Forest will provide a nonlinear, ensemble-based alternative that can capture complex patterns in the embedding space. Optionally, a shallow Multi-Layer Perceptron will be implemented as a neural network baseline to assess whether additional model complexity provides incremental improvements in predictive performance.
 
@@ -91,11 +89,11 @@ If, during exploratory analysis, the positive class (pathogenic non-coding varia
 
 ## 7. Project Timeline & Milestones
 
-The project is organized into seven phases across fifteen weeks. 
+The project is organized into seven phases across fifteen weeks.
 
-During weeks 1–4, the focus is on data acquisition and preparation. Activities include downloading and parsing ClinVar releases, defining and applying label filtering rules, performing consequence annotation via Ensembl VEP, conducting exploratory data analysis, finalizing window size choices through ablation studies, and designing the chromosome-based split strategy. This phase includes confirmation that the collaborator ESM2 embedding dataset can be successfully ingested and aligned with the primary analysis pipeline.
+During weeks 1–4, the focus is on data acquisition and preparation. Activities include downloading and parsing ClinVar releases, defining and applying label filtering rules, performing consequence annotation via Ensembl VEP, conducting exploratory data analysis, finalizing window size choices through ablation studies, and designing the chromosome-based split strategy.
 
-Weeks 5–8 focus on feature engineering and baseline model development. Embedding vectors will be generated (or retrieved from the collaborator) for all variants. Logistic Regression and Random Forest classifiers will be trained on the embedding features, and initial performance estimates using AUROC and AUPRC will be computed. Iterative analysis of class imbalance effects will inform threshold tuning and the selection of decision operating points.
+Weeks 5–8 focus on feature engineering and baseline model development. Embedding vectors will be generated for all variants. Logistic Regression and Random Forest classifiers will be trained on the embedding features, and initial performance estimates using AUROC and AUPRC will be computed. Iterative analysis of class imbalance effects will inform threshold tuning and the selection of decision operating points.
 
 Weeks 9–12 are dedicated to model refinement and rigorous statistical evaluation. If time permits, a shallow Multi-Layer Perceptron will be implemented as an optional extension. Final model evaluation will include bootstrapped confidence intervals, paired statistical tests comparing model performance, and detailed error analysis to understand which types of variants are misclassified and why.
 
@@ -107,7 +105,7 @@ This is an individual capstone project. Feedback will be iteratively solicited f
 
 ## 8. New Knowledge Acquisition
 
-This project provides hands-on experience with several contemporary machine learning and computational genomics techniques. First, it demonstrates practical application of pretrained DNA language models (DNABERT-style embeddings) for feature extraction in a genomic prediction task, connecting foundational transfer learning concepts to domain-specific bioinformatics challenges. Second, the project requires integration of externally provided computational features (ESM2 embeddings from a collaborator) into a unified modeling and evaluation pipeline, reflecting real-world data science scenarios where practitioners must combine data from multiple sources and reconcile different data formats. Third, the project builds deep literacy in biomedical data sources and annotation tools (ClinVar, Ensembl VEP), fostering fluency with standard genomic data representations and workflows. Finally, the project demonstrates professional software engineering practices (modular architecture, typed code, reproducible environments, unit testing) applied to a machine learning context, preparing the student for collaborative research environments and industry-scale data science roles.
+This project offers hands-on experience with a number of modern computational genomics and machine learning methods. It first shows how pretrained DNA language models (DNABERT-style embeddings) may be used practically for feature extraction in a genomic prediction job, relating fundamental transfer learning ideas to domain-specific bioinformatics problems. Second, the initiative promotes fluency with common genomic data representations and workflows by developing deep literacy in biological data sources and annotation tools (ClinVar, Ensembl VEP). Lastly, the project exemplifies professional software engineering techniques (typed code, reproducible environments, modular architecture, unit testing) applied to a machine learning context, preparing the student for collaborative research environments and industry-scale data science roles.
 
 ---
 
@@ -118,8 +116,6 @@ Ji, Y., Zhou, Z., Liu, H., and Davuluri, R. V. (2021). "DNABERT: pre-trained Bid
 Landrum, M. J., Lee, J. M., Benson, M., Brown, G. R., Chao, C., Chitipiralla, S., and others (2018). "ClinVar: improving access to variant interpretations and supporting evidence." *Nucleic Acids Research*, 46(D1), D1062–D1067.
 
 McLaren, W., Gil, L., Hunt, S. E., Riat, H. S., Ritchie, G. R., Thormann, A., and others (2016). "The Ensembl Variant Effect Predictor." *Genome Biology*, 17(1), 122.
-
-Lin, Z., Akin, H., Rao, R., Hie, B., Zhu, Z., Lu, W., and others (2023). "Evolutionary-scale prediction of atomic-level protein structure with a language model." *Science*, 379(6637), 1234–1242.
 
 ---
 
