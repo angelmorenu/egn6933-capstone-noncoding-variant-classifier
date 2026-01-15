@@ -1,73 +1,245 @@
-# EGN 6933 – Project in Applied Data Science
+# Machine Learning Classification of Pathogenic vs. Benign Non-Coding Genetic Variants
 
-**Student:** Angel Morenu 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+**EGN 6933 – Capstone Project in Applied Data Science**
+
+**Student:** Angel Morenu  
 **Semester:** Spring 2026  
+**Faculty Advisor:** Dr. Xiao Fan  
 **Instructor:** Dr. Edwin Marte Zorrilla  
-**Faculty Advisor:** [TBD - Target: Bioinformatics/Computational Biology/Genomics faculty]
 
-## Course Overview
+## Overview
 
-This course focuses on designing and developing an end-to-end capstone project in applied data science and AI. The goal is to build impactful, data-driven solutions to real-world problems through careful planning, iterative development, and rigorous evaluation.
+This capstone project develops a machine learning pipeline to classify non-coding genetic variants as pathogenic versus benign using pretrained DNA sequence embeddings. The work addresses a critical bottleneck in precision medicine: the majority of disease-associated variants lie in non-coding genomic regions where functional interpretation remains challenging.
 
 ## Project Information
 
-**Project Title:** Machine Learning Classification of Pathogenic vs. Benign Non-Coding Genetic Variants Using DNA Sequence Embeddings
+**Objective:** Build a reproducible, prediction-focused ML pipeline for binary classification of non-coding ClinVar variants using transfer learning from DNA foundation models.
 
-**Project Type:** Individual  
-**Status:** Planning Phase
+**Key Components:**
+- **Data:** ClinVar public repository (non-coding variants with high-confidence pathogenic/benign labels)
+- **Features:** Pretrained DNA sequence embeddings (DNABERT-style) from fixed-length genomic windows
+- **Models:** Logistic Regression, Random Forest, and optional shallow MLP
+- **Evaluation:** AUROC/AUPRC with chromosome-based holdout splitting to prevent data leakage
+- **Deployment:** Streamlit web application and command-line interface for variant scoring
 
-### Project Abstract
+**Collaboration:** Dylan Tan contributes precomputed ESM2 embedding features for coding variants, supporting methodological benchmarking and validation.
 
-This project builds a prediction-first machine learning pipeline to classify **non-coding ClinVar variants** as pathogenic vs. benign using **pretrained DNA sequence embeddings** (DNABERT-style) and simple classifiers (logistic regression, random forest, optional shallow MLP). Deliverables include a reproducible pipeline (data regeneration + splits + cached features), rigorous evaluation under class imbalance (AUPRC/AUROC + CIs + paired tests), and a user-facing Streamlit + CLI scoring interface.
+## Features
 
-**Key Features:**
-- Single primary dataset: ClinVar
-- Single task: binary classification (pathogenic vs benign) on high-confidence labels
-- Transfer learning via DNA foundation-model embeddings
-- Leakage-aware evaluation (chromosome holdout) + statistical testing
-- Deployable scoring app (Streamlit) + CLI
-- Reproducible engineering practices (conda/Docker, cached artifacts, tests)
+- ✅ **Transfer Learning:** Leverages pretrained DNA language models for feature extraction
+- ✅ **Leakage-Aware Evaluation:** Chromosome-based train/test splits prevent inflated performance
+- ✅ **Rigorous Statistics:** Bootstrapped confidence intervals, DeLong tests, paired comparisons
+- ✅ **Production-Ready:** Reproducible pipeline with cached embeddings, versioned datasets, and deployment interfaces
+- ✅ **Class Imbalance Handling:** Class weighting, threshold tuning, AUPRC-focused evaluation
+- ✅ **Interpretability:** Feature importance, calibrated probabilities, attribution analysis
 
 ## Repository Structure
 
 ```
-.
-├── README.md                 # This file
-├── project-proposal/         # Proposal documents
-├── research/                 # Literature review, related work
-├── milestones/              # Milestone deliverables and progress
-├── code/                    # Source code and notebooks
-└── documentation/           # Technical documentation
+egn6933-capstone-noncoding-variant-classifier/
+├── README.md                           # Project overview and documentation
+├── project-proposal/                   # Formal capstone proposal documents
+│   ├── Project_Proposal.md            # Full formal proposal (prose, inline citations)
+├── research/                           # Literature review and references
+│   └── papers/                        # Research papers (excluded from git)
+├── scripts/                           # Data processing and utility scripts
+│   ├── inspect_esm2_primateai_pkl.py  # ESM2 dataset schema inspection
+│   └── ingest_esm2_primateai.py       # ESM2 to Parquet ingestion with label policies
+├── src/                               # Core project source code
+│   └── noncoding_classifier/          # Main package (to be developed)
+├── notebooks/                         # Jupyter notebooks for EDA and prototyping
+├── configs/                           # Configuration files (hyperparameters, splits)
+├── tests/                            # Unit and integration tests
+├── data/                             # Data directory (excluded from git)
+│   ├── raw/                          # Original ClinVar downloads
+│   ├── processed/                    # Cleaned, labeled datasets
+│   └── embeddings/                   # Cached embedding features
+├── models/                           # Trained model artifacts (excluded from git)
+├── results/                          # Evaluation outputs, plots, reports
+├── app/                              # Streamlit web application
+├── docs/                             # Additional documentation
+├── .gitignore                        # Git exclusions (data, models, PDFs)
+├── pyproject.toml                    # Python project configuration
+├── environment.yml                    # Conda environment specification
+└── LICENSE                           # MIT License
 ```
+
+**Note:** Data files, trained models, research PDFs, and generated outputs are excluded from version control per `.gitignore`.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.11+
+- Conda (recommended) or pip
+- Git
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/angelmorenu/egn6933-capstone-noncoding-variant-classifier.git
+   cd egn6933-capstone-noncoding-variant-classifier
+   ```
+
+2. **Create the environment:**
+   ```bash
+   # Using conda (recommended)
+   conda env create -f environment.yml
+   conda activate noncoding-classifier
+   
+   # Or using pip
+   pip install -e .
+   ```
+
+3. **Download ClinVar data:**
+   ```bash
+   # Scripts for data download will be provided
+   # Data is not included in the repository
+   ```
+
+### Usage
+
+#### Data Ingestion (ESM2 Collaborator Dataset)
+```bash
+# Inspect ESM2 PKL schema
+python scripts/inspect_esm2_primateai_pkl.py \
+    --pkl-path /path/to/esm2_selected_features.pkl
+
+# Ingest ESM2 PKL to Parquet with label policy
+python scripts/ingest_esm2_primateai.py \
+    --pkl-path /path/to/esm2_selected_features.pkl \
+    --output-parquet data/processed/esm2_primateai.parquet \
+    --label-policy strict
+```
+
+#### Model Training (Coming Soon)
+```bash
+# Train baseline models
+python src/train.py --config configs/baseline.yaml
+
+# Evaluate on test set
+python src/evaluate.py --model-path models/best_model.pkl --test-data data/processed/test.parquet
+```
+
+#### Variant Scoring (Coming Soon)
+```bash
+# Streamlit web app
+streamlit run app/main.py
+
+# CLI scoring
+python -m noncoding_classifier.score --variant chr17:41234567:A:G --assembly GRCh38
+```
+
+## Project Timeline
+
+### Phase 1: Data & Infrastructure (Weeks 1-4) ✅
+- ✅ Download and parse ClinVar releases
+- ✅ Define label filtering (strict pathogenic/benign)
+- ✅ Ingest collaborator ESM2 dataset with flexible label policies
+- ✅ Validate Parquet outputs (35,703 strict variants, 0 NaN embeddings)
+- ✅ Set up git repository with clean commit history
+- 🔄 Consequence annotation with Ensembl VEP (in progress)
+- 🔄 Design chromosome-based split strategy
+
+### Phase 2: Feature Engineering & Baselines (Weeks 5-8)
+- [ ] Extract DNA sequence windows (101bp, 201bp, 501bp)
+- [ ] Generate DNABERT-style embeddings
+- [ ] Train Logistic Regression baseline
+- [ ] Train Random Forest baseline
+- [ ] Initial AUROC/AUPRC evaluation
+
+### Phase 3: Refinement & Evaluation (Weeks 9-12)
+- [ ] Implement optional MLP
+- [ ] Bootstrapped confidence intervals
+- [ ] Paired statistical tests (DeLong, permutation)
+- [ ] Error analysis and interpretability
+
+### Phase 4: Deployment & Documentation (Weeks 13-15)
+- [ ] Streamlit web application
+- [ ] Command-line interface
+- [ ] Final report and documentation
+- [ ] Project presentation
 
 ## Key Milestones
 
-- [ ] **Pre-Class:** Develop preliminary project idea
-- [ ] **Pre-Class:** Secure faculty advisor
-- [ ] **Class 1:** Present preliminary project idea
-- [x] Finalize project scope and proposal
-- [ ] Literature review and related work
-- [ ] Data collection and preprocessing
-- [ ] Model development and implementation
-- [ ] Evaluation and testing
-- [ ] Final deliverables and presentation
+- [x] **Jan 13, 2026:** ClinVar data verified and parsed
+- [x] **Jan 14, 2026:** ESM2 ingestion pipeline implemented with 4 label policies
+- [x] **Jan 15, 2026:** Proposal rewritten per advisor feedback (prose, inline citations)
+- [x] **Jan 15, 2026:** GitHub repository initialized and pushed
+- [ ] **Week 4:** Complete consequence annotation and chromosome split design
+- [ ] **Week 8:** Baseline models trained and evaluated
+- [ ] **Week 12:** Final model selection and statistical validation
+- [ ] **Week 15:** Deployment and final presentation
 
-## Contact Information
+## Technical Stack
 
-**Course Instructor:**  
-Dr. Edwin Marte Zorrilla  
-Email: emartezorrilla@ufl.edu  
-Phone: 352-392-0638  
-Office: Nuclear Sciences Bldg., Rm 329
+**Languages & Frameworks:**
+- Python 3.11+ (core language)
+- PyTorch or TensorFlow (optional, for MLP)
+- scikit-learn (baseline models, metrics)
+- pandas, numpy (data manipulation)
+- pyarrow (Parquet I/O)
 
-**Faculty Advisor:**  
-[Name]  
-[Email]  
-[Office/Contact Info]
+**Bioinformatics Tools:**
+- Ensembl VEP (consequence annotation)
+- DNABERT or similar (DNA embeddings)
+- ClinVar API/FTP (variant data)
 
-## Important Notes
+**Deployment:**
+- Streamlit (web application)
+- Click or argparse (CLI)
+- Docker (containerization, optional)
 
-- First class meeting: Be prepared with a preliminary project idea
-- Faculty advisor should be secured (or in progress) before first class
-- Group projects require expanded scope and clear rationale
-- Canvas course site is under development - check regularly for updates
+**Development:**
+- Git/GitHub (version control)
+- Conda (environment management)
+- Black, Ruff (code formatting/linting)
+- pytest (testing)
+
+## Data Sources
+
+- **ClinVar:** https://www.ncbi.nlm.nih.gov/clinvar/ (primary dataset)
+- **Ensembl VEP:** https://www.ensembl.org/info/docs/tools/vep/ (consequence annotation)
+- **ESM2 Embeddings:** Collaborator dataset (coding variants, benchmarking)
+
+## References
+
+- **Ji et al. (2021).** "DNABERT: pre-trained Bidirectional Encoder Representations from Transformers model for DNA-language in genome." *Bioinformatics*, 37(15), 2112–2120.
+- **Landrum et al. (2018).** "ClinVar: improving access to variant interpretations and supporting evidence." *Nucleic Acids Research*, 46(D1), D1062–D1067.
+- **McLaren et al. (2016).** "The Ensembl Variant Effect Predictor." *Genome Biology*, 17(1), 122.
+- **Lin et al. (2023).** "Evolutionary-scale prediction of atomic-level protein structure with a language model." *Science*, 379(6637), 1234–1242.
+
+## Contributing
+
+This is an individual capstone project. External contributions are not accepted, but feedback and suggestions are welcome via issues or email.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+**Angel Morenu**  
+M.S. Applied Data Science Candidate  
+University of Florida  
+Email: angel.morenu@ufl.edu
+
+**Faculty Advisor:** Dr. Xiaofan Fan  
+**Course Instructor:** Dr. Edwin Marte Zorrilla
+
+## Acknowledgments
+
+- **Dylan Tan** for providing precomputed ESM2 embedding features and reference code for coding variants
+- **Dr. Xiaofan Fan** for project guidance and access to HiPerGator computational resources
+- **ClinVar** and **Ensembl** for providing public genomic variant databases and annotation tools
+
+---
+
+**Repository:** https://github.com/angelmorenu/egn6933-capstone-noncoding-variant-classifier  
+**Course:** EGN 6933 – Project in Applied Data Science, Spring 2026  
+**University of Florida**
