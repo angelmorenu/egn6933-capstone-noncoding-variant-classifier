@@ -40,7 +40,7 @@ This capstone project develops a machine learning pipeline to classify coding ge
 ## Repository Structure
 
 ```
-egn6933-capstone-coding-variant-classifier/
+egn6933-capstone-variant-pathogenicity-esm2/
 ├── README.md                           # Project overview and documentation
 ├── project-proposal/                   # Formal capstone proposal documents
 │   ├── Project_Proposal.md            # Full formal proposal (prose, inline citations)
@@ -83,8 +83,8 @@ egn6933-capstone-coding-variant-classifier/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/angelmorenu/egn6933-capstone-coding-variant-classifier.git
-   cd egn6933-capstone-coding-variant-classifier
+   git clone https://github.com/angelmorenu/egn6933-capstone-variant-pathogenicity-esm2.git
+   cd egn6933-capstone-variant-pathogenicity-esm2
    ```
 
 2. **Create the environment:**
@@ -238,6 +238,6 @@ Email: angel.morenu@ufl.edu
 
 ---
 
-**Repository:** https://github.com/angelmorenu/egn6933-capstone-coding-variant-classifier  
+**Repository:** https://github.com/angelmorenu/egn6933-capstone-variant-pathogenicity-esm2  
 **Course:** EGN 6933 – Project in Applied Data Science, Spring 2026  
 **University of Florida**
