@@ -1,6 +1,6 @@
 # M.S. Applied Data Science: Capstone Project Proposal
 
-**Due Date:** January 25, 2025  
+**Due Date:** January 25, 2026  
 **Student Name:** Angel Morenu  
 **Course:** EGN 6933 – Project in Applied Data Science  
 **Project Type:** Individual
@@ -25,7 +25,7 @@ This capstone focuses on a prediction-focused, semester-feasible supervised lear
 
 The stakeholders for this work include rare disease research teams seeking to accelerate variant interpretation, clinical genomics analysts requiring computational decision-support tools, and computational genomics researchers developing scalable variant annotation workflows. The work is positioned within the broader precision medicine context, where accurate computational variant classification can reduce the burden of manual expert review and allow limited experimental resources to be focused on the most promising research directions.
 
-From a societal and ethical perspective, this project operates with publicly available, de-identified genetic variant data (Landrum et al., 2018). The project treats variant data responsibly and explicitly notes that model predictions are not intended for clinical diagnosis without independent laboratory confirmation and expert medical interpretation. The project will address class imbalance and label uncertainty explicitly by excluding ambiguous records (e.g., variants of uncertain significance, records with conflicting clinical interpretations) and by reporting performance metrics that remain valid under class imbalance.
+From a societal and ethical perspective, this project operates with publicly available, de-identified genetic variant data (Landrum et al., 2018). The project treats variant data responsibly and explicitly notes that model predictions are not intended for clinical diagnosis without independent laboratory confirmation and expert medical interpretation. The project will address class imbalance and label uncertainty explicitly by excluding ambiguous records (variants of uncertain significance, records with conflicting clinical interpretations) and by reporting performance metrics that remain valid under class imbalance.
 
 This project integrates applied data science—encompassing machine learning, rigorous statistical evaluation, and reproducible model deployment—with computational genomics and healthcare workflows, demonstrating how variant prioritization connects practical machine learning methods to clinically relevant research applications.
 
@@ -33,7 +33,7 @@ This project integrates applied data science—encompassing machine learning, ri
 
 ## 3. Data Acquisition & Viability
 
-The primary data source for this project is a public curated pathogenicity dataset of coding variants assembled by Dr. Fan’s group and provided via Dylan Tan. The dataset contains coding variants with associated pathogenicity labels and precomputed embedding-style features derived from protein language models (ESM2). This dataset is suitable for a semester capstone because it provides a clean starting point for machine learning experimentation while still requiring rigorous data handling, leakage-aware evaluation, and reproducible deployment.
+The primary data source for this project is a public curated pathogenicity dataset of coding variants assembled by Dr. Fan’s Lab and provided via Dylan Tan. The dataset contains coding variants with associated pathogenicity labels and precomputed embedding-style features derived from protein language models (ESM2). This dataset is suitable for a semester capstone because it provides a clean starting point for machine learning experimentation while still requiring rigorous data handling, leakage-aware evaluation, and reproducible deployment.
 
 As a secondary validation pathway (and to ensure full reproducibility), the project can additionally download and parse ClinVar (https://www.ncbi.nlm.nih.gov/clinvar/) and optionally apply consequence annotation using Ensembl VEP (McLaren et al., 2016) to confirm coding consequences and enable independent reconstruction of comparable training tables.
 
@@ -63,11 +63,11 @@ Reproducibility is central to the project's design. All random seeds are fixed a
 
 ## 5. Deployment Plan: "The App"
 
-The final deliverable includes a user-facing application that scores coding genetic variants and returns calibrated pathogenicity probabilities. The application will be implemented as a Streamlit web application, accepting as input either a single coding variant (specified by chromosome, genomic position, reference allele, alternate allele, and genome assembly, and/or a transcript/protein identifier if available) or a small CSV file containing multiple variants. The application returns for each variant a calibrated probability of pathogenicity and a predicted class label (pathogenic or benign) based on a documented decision threshold.
+The final deliverable includes a user-facing application that scores coding genetic variants and returns calibrated pathogenicity probabilities. The application will be implemented as a Streamlit web application and will support two primary workflows: (1) single-variant scoring via a simple input form (e.g., variant identifier fields and/or transcript/protein identifier when available) and (2) batch scoring via CSV upload. For batch input, the app will return a ranked “variant prioritization” table (sorted by predicted pathogenicity probability), with downloadable results suitable for downstream review.
 
-Additionally, a command-line interface will be provided to enable batch scoring of larger variant datasets provided as CSV or VCF-derived tables. This command-line tool allows seamless integration into automated variant interpretation pipelines and bioinformatics workflows used by computational research laboratories.
+To support transparent benchmarking, the Streamlit app will also include a “Model Performance” view that displays precomputed evaluation artifacts from the held-out gene/protein-disjoint test set (ROC and precision-recall curves with AUROC/AUPRC values and selected operating thresholds). These performance plots will be generated during the offline evaluation phase and bundled with the trained model release, ensuring that the displayed metrics are reproducible and not influenced by user-supplied inputs.
 
-The complete set of end-to-end project deliverables includes: (1) a reproducible pipeline with associated configuration files that can rebuild the dataset and models from the original public ClinVar release; (2) trained model artifacts (serialized scikit-learn or PyTorch models) accompanied by an evaluation report documenting performance metrics, statistical tests, and detailed error analysis; (3) a Streamlit web application for interactive variant scoring; and (4) a command-line tool for batch processing of variant sets.
+Additionally, a command-line interface will be provided for batch scoring of larger variant tables (CSV or VCF-derived tabular exports). The CLI will output a scored, ranked file and optionally export evaluation plots for reporting. The complete set of end-to-end project deliverables includes: (1) a reproducible pipeline with associated configuration files that can rebuild the processed dataset artifacts and models (from the curated dataset and, optionally, from public ClinVar/VEP as a validation pathway); (2) trained model artifacts (serialized scikit-learn or PyTorch models) accompanied by an evaluation report documenting performance metrics, statistical tests, and error analysis; (3) a Streamlit web application for interactive scoring and demonstration; and (4) a command-line tool for batch processing and integration into automated workflows.
 
 ---
 
@@ -122,7 +122,7 @@ McLaren, W., Gil, L., Hunt, S. E., Riat, H. S., Ritchie, G. R., Thormann, A., an
 ## Resources
 
 **Data sources:**
-- Public curated coding-variant pathogenicity dataset (Dr. Fan’s group; shared via Dylan Tan)
+- Public curated coding-variant pathogenicity dataset (Dr. Fan’s Lab; shared via Dylan Tan)
 - ClinVar (optional upstream/validation): https://www.ncbi.nlm.nih.gov/clinvar/
 
 **Tools and libraries:**
