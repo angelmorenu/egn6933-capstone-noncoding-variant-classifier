@@ -48,7 +48,8 @@ egn6933-capstone-variant-pathogenicity-esm2/
 │   └── papers/                        # Research papers (excluded from git)
 ├── scripts/                           # Data processing and utility scripts
 │   ├── inspect_esm2_primateai_pkl.py  # ESM2 dataset schema inspection
-│   └── ingest_esm2_primateai.py       # ESM2 to Parquet ingestion with label policies
+│   ├── ingest_esm2_primateai.py       # ESM2 to Parquet ingestion with label policies
+│   └── make_pickle_id_to_chrposrefalt.py  # Map pickle numeric ID -> chr_pos_ref_alt via ClinVar
 ├── src/                               # Core project source code
 │   ├── variant_classifier/            # Main package
 │   └── variant_embeddings/            # Embedding utilities
@@ -116,6 +117,12 @@ python scripts/ingest_esm2_primateai.py \
     --pkl-path /path/to/esm2_selected_features.pkl \
     --output-parquet data/processed/esm2_primateai.parquet \
     --label-policy strict
+
+# Build mapping from Dylan pickle numeric ID (ClinVar VariationID) -> chr_pos_ref_alt (default: GRCh38 SNVs)
+python scripts/make_pickle_id_to_chrposrefalt.py --max-ids 100000000
+# Outputs:
+# - data/processed/pickle_id_to_chrposrefalt.tsv
+# - data/processed/pickle_id_to_chrposrefalt_ambiguous.tsv
 ```
 
 #### Model Training (Coming Soon)
@@ -144,7 +151,9 @@ python -m variant_classifier.score --variant chr17:41234567:A:G --assembly GRCh3
 - ✅ Ingest curated ESM2 dataset with flexible label policies
 - ✅ Validate Parquet outputs (strict variants, 0 NaN embeddings)
 - ✅ Set up git repository with clean commit history
+- ✅ Confirm canonical ID mapping (pickle numeric ID ⇄ ClinVar VariationID ⇄ chr_pos_ref_alt)
 - 🔄 Design gene/protein-aware split strategy
+- 🔄 Join curated embeddings to canonical variant keys and lock label mapping/exclusions (target: Week 2)
 
 ### Phase 2: Feature Engineering & Baselines (Weeks 5-8)
 - [ ] Finalize feature set (ESM2 embedding dimensions and QC)
@@ -170,6 +179,7 @@ python -m variant_classifier.score --variant chr17:41234567:A:G --assembly GRCh3
 - [x] **Jan 14, 2026:** ESM2 ingestion pipeline implemented with label policies
 - [x] **Jan 15, 2026:** Proposal updated to coding-variant scope
 - [x] **Jan 15, 2026:** GitHub repository initialized and pushed
+- [x] **Jan 16, 2026:** Confirmed pickle numeric ID matches ClinVar VariationID; generated chr_pos_ref_alt mapping
 - [ ] **Week 4:** Complete gene/protein-aware split design
 - [ ] **Week 8:** Baseline models trained and evaluated
 - [ ] **Week 12:** Final model selection and statistical validation
